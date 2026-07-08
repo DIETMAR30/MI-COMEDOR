@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍲 Mi Comedor - Sistema de Gestión</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ====================================================== -->
+<!-- SECCIÓN 1: LOGIN / REGISTRO                            -->
+<!-- ====================================================== -->
+<div id="authSection">
+    <div class="container">
+        <div class="login-box">
+            <!-- Logo y título -->
+            <div class="text-center">
+                <i class="fas fa-utensils logo-icon"></i>
+                <h3 class="mt-2">🍲 Mi Comedor</h3>
+                <p class="text-muted">Sistema de Gestión para Comedores Populares</p>
+                <p class="text-muted small">Huancayo - Junín</p>
+            </div>
+            
+            <!-- Pestañas Login / Registro -->
+            <ul class="nav nav-tabs nav-justified mb-3" id="authTabs">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#loginTab">
+                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#registerTab">
+                        <i class="fas fa-user-plus"></i> Registrarse
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="tab-content">
+                <!-- Panel de Login -->
+                <div class="tab-pane active" id="loginTab">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label">Usuario</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input type="text" class="form-control" id="loginUser" placeholder="Ingresa tu usuario" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Contraseña</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" id="loginPass" placeholder="Ingresa tu contraseña" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                        </button>
+                        <div id="loginError" class="alert alert-danger mt-3 d-none">
+                            <i class="fas fa-exclamation-circle"></i> Usuario o contraseña incorrectos
+                        </div>
+                    </form>
+                    <p class="text-center text-muted mt-3">
+                        <small><i class="fas fa-info-circle"></i> Credenciales de prueba: <strong>admin</strong> / <strong>admin123</strong></small>
+                    </p>
+                </div>
+                
+                <!-- Panel de Registro -->
+                <div class="tab-pane" id="registerTab">
+                    <form id="registerForm">
+                        <div class="mb-3">
+                            <label class="form-label">Usuario</label>
+                            <input type="text" class="form-control" id="regUser" placeholder="Elige un usuario" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="regEmail" placeholder="tu@email.com" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="regPass" placeholder="Mínimo 6 caracteres" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-user-plus"></i> Registrarse
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ====================================================== -->
+<!-- SECCIÓN 2: APLICACIÓN PRINCIPAL                        -->
+<!-- ====================================================== -->
+<div id="appSection" style="display: none;">
+    
+    <!-- Header / Barra superior -->
+    <header class="header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h4><i class="fas fa-utensils"></i> Mi Comedor</h4>
+                    <small class="text-light opacity-75">Sistema de Gestión</small>
+                </div>
+                <div class="col-md-6 text-end">
+                    <span class="me-3 text-light">
+                        <i class="fas fa-user-circle"></i> <span id="userName">Administrador</span>
+                    </span>
+                    <button class="btn btn-outline-light btn-sm" onclick="cerrarSesion()">
+                        <i class="fas fa-sign-out-alt"></i> Salir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container-fluid">
+        <div class="row">
+            
+            <!-- Sidebar / Menú lateral -->
+            <nav class="col-md-2 sidebar d-none d-md-block">
+                <div class="sidebar-header">
+                    <i class="fas fa-utensils"></i>
+                    <h6>Menú Principal</h6>
+                </div>
+                <hr>
+                <a href="#" class="active" onclick="mostrarPagina('dashboard')">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <a href="#" onclick="mostrarPagina('beneficiarios')">
+                    <i class="fas fa-users"></i> Beneficiarios
+                </a>
+                <a href="#" onclick="mostrarPagina('donaciones')">
+                    <i class="fas fa-hand-holding-heart"></i> Donaciones
+                </a>
+                <a href="#" onclick="mostrarPagina('inventario')">
+                    <i class="fas fa-boxes"></i> Inventario
+                </a>
+                <a href="#" onclick="mostrarPagina('reportes')">
+                    <i class="fas fa-chart-bar"></i> Reportes
+                </a>
+                <hr>
+                <a href="#" onclick="cerrarSesion()" class="text-danger">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </nav>
+            
+            <!-- Contenido principal -->
+            <main class="col-md-10 main-content">
+                
+                <!-- ===== PÁGINA: DASHBOARD ===== -->
+                <section id="page-dashboard" class="page active">
+                    <h2 class="mb-4"><i class="fas fa-chart-pie text-primary"></i> Dashboard</h2>
+                    
+                    <!-- Tarjetas de estadísticas -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-3 col-6">
+                            <div class="stat-card">
+                                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                                <h3 id="totalBeneficiarios">0</h3>
+                                <p class="text-muted">Beneficiarios</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stat-card stat-success">
+                                <div class="stat-icon"><i class="fas fa-hand-holding-heart"></i></div>
+                                <h3 id="totalDonaciones">0</h3>
+                                <p class="text-muted">Donaciones</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stat-card stat-warning">
+                                <div class="stat-icon"><i class="fas fa-boxes"></i></div>
+                                <h3 id="totalInventario">0</h3>
+                                <p class="text-muted">Productos</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stat-card stat-danger">
+                                <div class="stat-icon"><i class="fas fa-utensils"></i></div>
+                                <h3 id="racionesHoy">0</h3>
+                                <p class="text-muted">Raciones Hoy</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Información del comedor -->
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-info-circle"></i> Información del Comedor
+                        </div>
+                        <div class="card-body">
+                            <h5>Comedor Popular "Esperanza"</h5>
+                            <p><i class="fas fa-map-marker-alt"></i> Huancayo - Junín</p>
+                            <p class="text-muted">
+                                Este sistema fue desarrollado para optimizar la gestión de beneficiarios, 
+                                donaciones e inventario del comedor, permitiendo una mejor atención a la 
+                                comunidad vulnerable de Huancayo.
+                            </p>
+                            <div class="row mt-3">
+                                <div class="col-md-4">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-calendar"></i> Fundado: 2018
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="alert alert-success">
+                                        <i class="fas fa-users"></i> Voluntarios: 12
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="alert alert-warning">
+                                        <i class="fas fa-clock"></i> Horario: 11:00 - 14:00
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- ===== PÁGINA: BENEFICIARIOS ===== -->
+                <section id="page-beneficiarios" class="page">
+                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+                        <h2><i class="fas fa-users text-primary"></i> Beneficiarios</h2>
+                        <button class="btn btn-primary" onclick="abrirModalBeneficiario()">
+                            <i class="fas fa-plus"></i> Nuevo Beneficiario
+                        </button>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- Buscador -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                        <input type="text" class="form-control" id="buscarBeneficiario" 
+                                               placeholder="Buscar por nombre o DNI..." onkeyup="buscarBeneficiario()">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <span class="badge bg-primary">Total: <span id="totalBeneficiariosBadge">0</span></span>
+                                </div>
+                            </div>
+                            
+                            <!-- Tabla -->
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Nombre Completo</th>
+                                            <th>DNI</th>
+                                            <th>Tipo</th>
+                                            <th>Teléfono</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaBeneficiarios">
+                                        <!-- Datos cargados dinámicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- ===== PÁGINA: DONACIONES ===== -->
+                <section id="page-donaciones" class="page">
+                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+                        <h2><i class="fas fa-hand-holding-heart text-success"></i> Donaciones</h2>
+                        <button class="btn btn-success" onclick="abrirModalDonacion()">
+                            <i class="fas fa-plus"></i> Registrar Donación
+                        </button>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Tipo</th>
+                                            <th>Descripción</th>
+                                            <th>Cantidad</th>
+                                            <th>Donante</th>
+                                            <th>Fecha</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaDonaciones">
+                                        <!-- Datos cargados dinámicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- ===== PÁGINA: INVENTARIO ===== -->
+                <section id="page-inventario" class="page">
+                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+                        <h2><i class="fas fa-boxes text-warning"></i> Inventario</h2>
+                        <button class="btn btn-warning" onclick="abrirModalInventario()">
+                            <i class="fas fa-plus"></i> Agregar Producto
+                        </button>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Producto</th>
+                                            <th>Categoría</th>
+                                            <th>Cantidad</th>
+                                            <th>Unidad</th>
+                                            <th>Vencimiento</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaInventario">
+                                        <!-- Datos cargados dinámicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- ===== PÁGINA: REPORTES ===== -->
+                <section id="page-reportes" class="page">
+                    <h2><i class="fas fa-chart-bar text-info"></i> Reportes y Estadísticas</h2>
+                    
+                    <div class="row g-4 mt-2">
+                        <!-- Gráfico 1: Beneficiarios por tipo -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="fas fa-users"></i> Beneficiarios por Tipo
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="graficoBeneficiarios" height="250"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Gráfico 2: Donaciones por tipo -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="fas fa-hand-holding-heart"></i> Donaciones por Tipo
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="graficoDonaciones" height="250"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Resumen general -->
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="fas fa-clipboard-list"></i> Resumen General
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="alert alert-primary">
+                                                <h5>Beneficiarios</h5>
+                                                <h3 id="reporteTotalBeneficiarios">0</h3>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="alert alert-success">
+                                                <h5>Donaciones</h5>
+                                                <h3 id="reporteTotalDonaciones">0</h3>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="alert alert-warning">
+                                                <h5>Productos</h5>
+                                                <h3 id="reporteTotalInventario">0</h3>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="alert alert-info">
+                                                <h5>Raciones</h5>
+                                                <h3 id="reporteRaciones">0</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+            </main>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <small>
+                <i class="fas fa-code"></i> Sistema de Gestión para Comedores Populares - Huancayo 2026
+                <br>
+                <span class="opacity-50">Desarrollado con ❤️ para la comunidad</span>
+            </small>
+        </div>
+    </footer>
+</div>
+
+<!-- ====================================================== -->
+<!-- SECCIÓN 3: MODALES                                     -->
+<!-- ====================================================== -->
+
+<!-- Modal: Beneficiario -->
+<div class="modal fade" id="modalBeneficiario" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalBeneficiarioTitulo">
+                    <i class="fas fa-user-plus text-primary"></i> Nuevo Beneficiario
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formBeneficiario">
+                    <input type="hidden" id="beneficiarioEditId">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nombre <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="benefNombre" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Apellidos <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="benefApellidos" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">DNI <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="benefDni" maxlength="8" placeholder="8 dígitos" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Teléfono</label>
+                            <input type="text" class="form-control" id="benefTelefono" placeholder="Opcional">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Beneficiario</label>
+                        <select class="form-select" id="benefTipo">
+                            <option value="Adulto Mayor">Adulto Mayor</option>
+                            <option value="Niño">Niño</option>
+                            <option value="Madre Gestante">Madre Gestante</option>
+                            <option value="Persona con Discapacidad">Persona con Discapacidad</option>
+                            <option value="Familia en Situación Vulnerable">Familia en Situación Vulnerable</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Dirección</label>
+                        <input type="text" class="form-control" id="benefDireccion" placeholder="Dirección (opcional)">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="guardarBeneficiario()">
+                    <i class="fas fa-save"></i> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Donación -->
+<div class="modal fade" id="modalDonacion" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-hand-holding-heart text-success"></i> Registrar Donación
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formDonacion">
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Donación</label>
+                        <select class="form-select" id="donacionTipo">
+                            <option value="alimento">Alimento</option>
+                            <option value="dinero">Dinero</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <input type="text" class="form-control" id="donacionDescripcion" placeholder="Ej: Arroz, Fideos, etc.">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Cantidad</label>
+                            <input type="number" class="form-control" id="donacionCantidad" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Unidad</label>
+                            <select class="form-select" id="donacionUnidad">
+                                <option value="kg">kg</option>
+                                <option value="g">g</option>
+                                <option value="L">L</option>
+                                <option value="unidades">unidades</option>
+                                <option value="S/">S/ (dinero)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Donante</label>
+                        <input type="text" class="form-control" id="donacionDonante" placeholder="Nombre del donante">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fecha</label>
+                        <input type="date" class="form-control" id="donacionFecha">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="guardarDonacion()">
+                    <i class="fas fa-save"></i> Guardar Donación
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Inventario -->
+<div class="modal fade" id="modalInventario" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-box text-warning"></i> Agregar Producto
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formInventario">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre del Producto <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="invProducto" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Categoría</label>
+                            <select class="form-select" id="invCategoria">
+                                <option value="Granos">Granos</option>
+                                <option value="Enlatados">Enlatados</option>
+                                <option value="Lácteos">Lácteos</option>
+                                <option value="Carnes">Carnes</option>
+                                <option value="Verduras">Verduras</option>
+                                <option value="Bebidas">Bebidas</option>
+                                <option value="Otros">Otros</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Cantidad <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="invCantidad" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Unidad</label>
+                            <select class="form-select" id="invUnidad">
+                                <option value="kg">kg</option>
+                                <option value="g">g</option>
+                                <option value="L">L</option>
+                                <option value="unidades">unidades</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Fecha Vencimiento</label>
+                            <input type="date" class="form-control" id="invVencimiento">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Proveedor</label>
+                        <input type="text" class="form-control" id="invProveedor" placeholder="Nombre del proveedor">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-warning" onclick="guardarInventario()">
+                    <i class="fas fa-save"></i> Guardar Producto
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ====================================================== -->
+<!-- SCRIPTS                                                -->
+<!-- ====================================================== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
